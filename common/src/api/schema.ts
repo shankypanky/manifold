@@ -50,6 +50,7 @@ import {
 import { DisplayUser, FullUser } from './user-types'
 
 import { ContractMetric } from 'common/contract-metric'
+import { PersonalizedManaOfferSummary } from 'common/personalized-mana-offer'
 import {
   CheckoutSession,
   GIDXDocument,
@@ -1264,6 +1265,7 @@ export const API = (_apiTypeCheck = {
         installedAppPlatforms: z.array(z.string()).optional(),
         paymentInfo: z.string().optional(),
         lastAppReviewTime: z.number().optional(),
+        optOutAppReviewPrompts: z.boolean().optional(),
       })
       .strict(),
   },
@@ -2900,6 +2902,26 @@ export const API = (_apiTypeCheck = {
       .strict(),
     returns: {} as { success: boolean },
   },
+  'get-referral-earnings': {
+    method: 'GET',
+    visibility: 'undocumented',
+    authed: true,
+    props: z.object({}).strict(),
+    returns: {} as {
+      total: number
+      byReferredUserId: Record<
+        string,
+        {
+          amount: number
+          maxMultiplier: number
+          // Which bonus types this referrer has been paid for this referred
+          // user. 'first_bet'/'verify' are the new split; 'legacy' means a
+          // pre-split single-payment txn exists (treated as fully paid).
+          bonusTypes: ('first_bet' | 'verify' | 'legacy')[]
+        }
+      >
+    },
+  },
 
   'save-market-draft': {
     method: 'POST',
@@ -3307,11 +3329,46 @@ export const API = (_apiTypeCheck = {
     method: 'POST',
     visibility: 'undocumented',
     authed: true,
-    props: z.object({}).strict(),
+    props: z
+      .object({
+        offerId: z.string().optional(),
+      })
+      .strict(),
     returns: {} as {
       sessionId: string
       clientSecret: string
     },
+  },
+  'get-personalized-mana-offers': {
+    method: 'GET',
+    visibility: 'undocumented',
+    authed: true,
+    props: z.object({}).strict(),
+    returns: {} as PersonalizedManaOfferSummary,
+  },
+  'activate-personalized-mana-offers': {
+    method: 'POST',
+    visibility: 'undocumented',
+    authed: true,
+    props: z.object({}).strict(),
+    returns: {} as PersonalizedManaOfferSummary,
+  },
+  'release-personalized-mana-offer-lock': {
+    method: 'POST',
+    visibility: 'undocumented',
+    authed: true,
+    props: z.object({ offerId: z.string() }).strict(),
+    returns: {} as { success: boolean },
+  },
+  'dismiss-personalized-mana-offer': {
+    method: 'POST',
+    visibility: 'undocumented',
+    authed: true,
+    // Global dismiss: applies to all active offers for the calling user.
+    // dismissed=false un-dismisses them (used by the "show hidden offer(s)"
+    // chip on /checkout).
+    props: z.object({ dismissed: z.boolean() }).strict(),
+    returns: {} as PersonalizedManaOfferSummary,
   },
   'admin-create-charity-giveaway': {
     method: 'POST',
@@ -4085,8 +4142,11 @@ export const API = (_apiTypeCheck = {
     authed: true,
     props: z
       .object({
-        limit: z.coerce.number().int().min(1).max(200).default(50),
+        limit: z.coerce.number().int().min(1).max(2000).default(25),
         offset: z.coerce.number().int().min(0).default(0),
+        dateRange: z
+          .enum(['all', 'week', 'month', '3-months', '6-months', 'year'])
+          .default('all'),
       })
       .strict(),
     returns: {} as {
