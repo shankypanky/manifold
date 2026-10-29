@@ -203,6 +203,10 @@ import { adminCreateSweepstakes } from './admin-create-sweepstakes'
 import { getCharityGiveawayList } from './get-charity-giveaway-list'
 import { getCryptoPurchaseStatus } from './get-crypto-purchase-status'
 import { createDaimoSession } from './create-daimo-session'
+import { getPersonalizedManaOffers } from './get-personalized-mana-offers'
+import { activatePersonalizedManaOffers } from './activate-personalized-mana-offers'
+import { releasePersonalizedManaOfferLock } from './release-personalized-mana-offer-lock'
+import { dismissPersonalizedManaOffer } from './dismiss-personalized-mana-offer'
 import { adminCreateCharityGiveaway } from './admin-create-charity-giveaway'
 import { adminUpdateCharityGiveawayPrize } from './admin-update-charity-giveaway-prize'
 import { createPost } from './create-post'
@@ -259,6 +263,7 @@ import {
 } from './pending-clarifications'
 import { purchaseContractBoost } from './purchase-boost'
 import { referUser } from './refer-user'
+import { getReferralEarnings } from './get-referral-earnings'
 import { cancelMerchOrder } from './cancel-merch-order'
 import { getMerchOrders } from './get-merch-orders'
 import { getMerchStockStatus } from './get-merch-stock-status'
@@ -486,6 +491,7 @@ export const handlers: { [k in APIPath]: APIHandler<k> } = {
   'generate-concise-title': generateConciseTitle,
   'get-close-date': getCloseDateEndpoint,
   'refer-user': referUser,
+  'get-referral-earnings': getReferralEarnings,
   'create-post-comment': createPostComment,
   'create-post': createPost,
   'update-post': updatePost,
@@ -515,6 +521,10 @@ export const handlers: { [k in APIPath]: APIHandler<k> } = {
   'get-charity-giveaway-list': getCharityGiveawayList,
   'get-crypto-purchase-status': getCryptoPurchaseStatus,
   'create-daimo-session': createDaimoSession,
+  'get-personalized-mana-offers': getPersonalizedManaOffers,
+  'activate-personalized-mana-offers': activatePersonalizedManaOffers,
+  'release-personalized-mana-offer-lock': releasePersonalizedManaOfferLock,
+  'dismiss-personalized-mana-offer': dismissPersonalizedManaOffer,
   'buy-charity-giveaway-tickets': buyCharityGiveawayTickets,
   'get-charity-giveaway-sales': getCharityGiveawaySales,
   'select-charity-giveaway-winner': selectCharityGiveawayWinner,
